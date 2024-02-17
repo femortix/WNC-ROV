@@ -1,10 +1,10 @@
 # WNC-ROV
 <p><b>Community of Practice's code for a remote submersible. The idea is to allow it to traverse underwater locales and collect temperature, pressure, and possibly more, all autonomously.</b></p>
-<p>• Programming is done with the Arduino IDE with an Arduino microcontroller. Arduino's language is most <i>similar</i> to C++, but not everything from C++ (notably the standard library) is native to Arduino, so keep that in mind.</p><br />
-<a href="#section1">Preface</a>
-<a href="#section2">Immediate To-Do</a>
-<a href="#section3">Future To-Do</a>
-<a href="#section4">Component Info</a>
+<p>• Programming is done with the Arduino IDE with an Arduino microcontroller. Arduino's language is most <i>similar</i> to C++, but not everything from C++ (notably the standard library) is native to Arduino, so keep that in mind.</p>
+<p><a href="#section1">Preface</a></p>
+<p><a href="#section2">Immediate To-Do</a></p>
+<p><a href="#section3">Future To-Do</a></p>
+<p><a href="#section4">Component Info</a></p>
 <hr />
 <h2 id="section1">Preface</h2><br />
 <ul>
@@ -27,7 +27,7 @@
 </ol>
 <hr />
 <h2 id="section4">Component Info</h2><br />
-<table style="width:100%; text-align:center">
+<table>
 	<tr>
 		<th>Device</th>
 		<th>Purpose</th>
