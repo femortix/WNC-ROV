@@ -13,10 +13,10 @@
  *     maximum file count increased from 99 to 9999, move() reworked/shortened.
 /*/
 
-#include "RoV_Pressure.h" // In-house. Separates pressure sensor code
-#include "RoV_Temperature.h" // In-house. Separates temperature probe code
-#include "RoV_SDCard.h" // In-house. Separates SD card chip code
-#include "RoV_Motors.h" // In-house. Separates motor code
+#include "ROV_Pressure.h" // In-house. Separates pressure sensor code
+#include "ROV_Temperature.h" // In-house. Separates temperature probe code
+#include "ROV_SDCard.h" // In-house. Separates SD card chip code
+#include "ROV_Motors.h" // In-house. Separates motor code
 
 void setup() {
   Serial.begin(9600);
