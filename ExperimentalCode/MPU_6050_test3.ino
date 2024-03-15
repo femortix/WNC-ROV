@@ -18,7 +18,7 @@ const bool GYRO = false; // Logging acceleration if false
 // MPU-6050 registers, relatively self-explanatory
 #define XG_OFFSET_H 0x13 // _H registers are the "high" bytes of 2-byte pieces of data
 #define XG_OFFSET_L 0x14 // _L registers are "low" bytes; combined you get 0bhhhhhhhhllllllll
-#define YG_OFFSET_H 0x15 // Gyro offsets are +/- 1 LSB/deg/s
+#define YG_OFFSET_H 0x15 // Gyro offsets are +/- 1 LSB
 #define YG_OFFSET_L 0x16
 #define ZG_OFFSET_H 0x17
 #define ZG_OFFSET_L 0x18
