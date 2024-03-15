@@ -4,7 +4,7 @@
 <p><a href="#section1">Preface</a></p>
 <p><a href="#section2">Immediate To-Do</a></p>
 <p><a href="#section3">Future To-Do</a></p>
-<p><a href="#section4">Component Info</a></p>
+<p><a href="#section4">Project Data</a></p>
 <hr />
 <h2 id="section1">Preface</h2><br />
 <ul>
@@ -26,7 +26,7 @@
 	<li>Tie current and desired depth to said buoyancy control</li>
 </ol>
 <hr />
-<h2 id="section4">Component Info</h2><br />
+<h2 id="section4">Project Data</h2><br />
 <table>
 	<tr>
 		<th>Device</th>
@@ -61,3 +61,4 @@
 		<td>5V Waterproof (?) Pressure Sensor</td>
 	</tr>
 </table>
+<p>Recorded Accelerometer/Gyrometer Errors: <a href="https://docs.google.com/spreadsheets/d/1X6XxIqIN3YmBvOW2JnSpvIH72xGgN9qytv67VfxdVCs/edit?usp=sharing">MPU-6050 Static Measurements (LSB)</a></p>
