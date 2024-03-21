@@ -1,12 +1,16 @@
-const bool GYRO = false; // Logging acceleration if false
+/*/
+ * NOTES ON (HOPEFULLY) FINAL REVISION:
+ *   The acceleration offsets did nothing when I tweaked them. They were weird to begin with, being "offset
+ * cancellation" measured in "9.8E-4 Gs of acceleration" per step. Then I realized I was reading registers for
+ * the MPU-6500 (the gyro offsets still worked as expected).
+ *   After serial outputting the offset values for the gyroscope and manually-offset accelerometer, I give the
+ * values my seal of approval. Unsure if the electrical noise will average to 0 as it continues running, or
+ * if I should convert them to human-readable units then round them off at ~0.08 deg/s (5 LSB) and ~0.06 m/s^2
+ *(100 LSB) respectively.
+/*/
 
 #include <Wire.h>
-#include <SD.h>
 
-#define CHIP_SELECT 10
-#define DIGITAL_INPUT 11
-#define DIGITAL_OUTPUT 12
-#define SPI_CLOCK 13
 // Serial DAta and Serial CLock pins respectively
 #define SDA 18 // I2C SDA pin, also 4 or A4
 #define SCL 19 // I2C SCL pin, also 5 or A5
@@ -39,98 +43,43 @@ const bool GYRO = false; // Logging acceleration if false
 #define GYRO_ZOUT_H 0x47
 #define GYRO_ZOUT_L 0x48
 #define PWR_MGMT_1 0x6B
-#define XA_OFFSET_H 0x77 // Accel offsets are +/- 0.98 gs of acceleration (???)
-#define XA_OFFSET_L 0x78
-#define YA_OFFSET_H 0x7A
-#define YA_OFFSET_L 0x7B
-#define ZA_OFFSET_H 0x7D
-#define ZA_OFFSET_L 0x7E
 
-File datalog;
-char fileName[13] = "LOG_0000.csv";
 int8_t getByte(int device, int address);
 int16_t getTwoBytes(int device, int address);
 void setByte(int device, int address, int8_t value);
 
 void setup() {
-  pinMode(CHIP_SELECT, OUTPUT);
-
   Serial.begin(19200);
-  Serial.println("Card initializing... ");
-  if (!SD.begin(CHIP_SELECT)) { // Early return: If chip can't initialize via SD.h's library
-    Serial.print("Failed. Stopping.");
-    return;
-  }
-  Serial.print("Initialized. ");
-
-  Serial.println("Creating file... ");
-  for (uint16_t i = 0; i < 10000; i++) {
-    // Add each digit in a 4-digit number to '0' character code, so that 0's character code + anything from 0-9 gives '0'-'9'
-    fileName[4] = i / 1000 + '0'; // ints and chars always truncate/round down fractional numbers
-    fileName[5] = (i % 1000) / 100 + '0';
-    fileName[6] = (i % 100) / 10 + '0';
-    fileName[7] = i % 10 + '0';
-    if (!SD.exists(fileName)) {
-      datalog = SD.open(fileName, FILE_WRITE);
-      break;
-    }
-  }
-  if (!datalog) { // Early return: LOG_0000.csv through LOG_9999.csv exist, or datalog just couldn't be defined
-    Serial.print("Failed. Stopping.");
-    return;
-  }
-  Serial.print("Logging to: ");
-  Serial.println(fileName);
-
-  if (GYRO)
-    datalog.println("xRVel (LSB),yRVel (LSB),zRVel (LSB)");
-  else
-    datalog.println("xAccel (LSB),yAccel (LSB),zAccel (LSB)");
-  datalog.close();
-
   Wire.setClock(400000); // MPU 6050 communicates via 400 kHz I2C clock
   Wire.begin();
-  setByte(MPU_A, PWR_MGMT_1, 0b00000001);
-  setByte(MPU_A, GYRO_CONFIG, 0b00010000); // +/- 500 deg/s
-  setByte(MPU_A, ACCEL_CONFIG, 0b00000000); // +/- 2 gs (+/- 19.6 m/s^2)
-  setByte(MPU_A, XG_OFFSET_H, 0b00000000);
-  setByte(MPU_A, XG_OFFSET_L, 0b00000000);
-  setByte(MPU_A, YG_OFFSET_H, 0b00000000);
-  setByte(MPU_A, YG_OFFSET_L, 0b00000000);
-  setByte(MPU_A, ZG_OFFSET_H, 0b00000000);
-  setByte(MPU_A, ZG_OFFSET_L, 0b00000000);
-  setByte(MPU_A, XA_OFFSET_H, 0b00000000);
-  setByte(MPU_A, XA_OFFSET_L, 0b00000000);
-  setByte(MPU_A, YA_OFFSET_H, 0b00000000);
-  setByte(MPU_A, YA_OFFSET_L, 0b00000000);
-  setByte(MPU_A, ZA_OFFSET_H, 0b00000000);
-  setByte(MPU_A, ZA_OFFSET_L, 0b00000000);
+  setByte(MPU_A, PWR_MGMT_1, 0b00000001); // Reset? Really don't know what this does
+  setByte(MPU_A, GYRO_CONFIG, 0b00010000); // [-500, 500] deg/s over [-32768, 32767]
+  setByte(MPU_A, ACCEL_CONFIG, 0b00000000); // [-2, 2] Gs over [-32768, 32767] 
+  setByte(MPU_A, XG_OFFSET_H, 0b00000000); // Add 92 bits to GYRO_XOUT
+  setByte(MPU_A, XG_OFFSET_L, 0b01011100);
+  setByte(MPU_A, YG_OFFSET_H, 0b00000000); // Add 33 bits to GYRO_YOUT
+  setByte(MPU_A, YG_OFFSET_L, 0b00100001);
+  setByte(MPU_A, ZG_OFFSET_H, 0b11111111); // Subtract 7 bits from GYRO_ZOUT
+  setByte(MPU_A, ZG_OFFSET_L, 0b11111001);
 }
 
 void loop() {
-  datalog = SD.open(fileName, FILE_WRITE);
-  if (GYRO) {
-    getByte(MPU_A, GYRO_XOUT_H);
-    datalog.print(getTwoBytes(MPU_A, GYRO_XOUT_H));
-    datalog.print(",");
-    getByte(MPU_A, GYRO_YOUT_H);
-    datalog.print(getTwoBytes(MPU_A, GYRO_YOUT_H));
-    datalog.print(",");
-    getByte(MPU_A, GYRO_ZOUT_H);
-    datalog.print(getTwoBytes(MPU_A, GYRO_ZOUT_H));
-  }
-  else {
-    getByte(MPU_A, ACCEL_XOUT_H);
-    datalog.print(getTwoBytes(MPU_A, ACCEL_XOUT_H));
-    datalog.print(",");
-    getByte(MPU_A, ACCEL_YOUT_H);
-    datalog.print(getTwoBytes(MPU_A, ACCEL_YOUT_H));
-    datalog.print(",");
-    getByte(MPU_A, ACCEL_ZOUT_H);
-    datalog.print(getTwoBytes(MPU_A, ACCEL_ZOUT_H));
-  }
-  datalog.println();
-  datalog.close();
+  // Thought I should mention I use int16_t, since the behavior of short varies (2 or 4 bytes) by device
+  int16_t acc[3];
+  getByte(MPU_A, ACCEL_XOUT_H);
+  acc[0] = getTwoBytes(MPU_A, ACCEL_XOUT_H);
+  getByte(MPU_A, ACCEL_YOUT_H);
+  acc[1] = getTwoBytes(MPU_A, ACCEL_YOUT_H);
+  getByte(MPU_A, ACCEL_ZOUT_H);
+  acc[2] = getTwoBytes(MPU_A, ACCEL_ZOUT_H);
+
+  Serial.print("ACC: ");
+  Serial.print(acc[0] + 4);
+  Serial.print(", ");
+  Serial.print(acc[1] + 4);
+  Serial.print(", ");
+  Serial.println(acc[2] - 14720);
+  delay(100);
 }
 
 int8_t getByte(int device, int address) {
