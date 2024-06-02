@@ -26,6 +26,7 @@
 <hr />
 <h2 id="s1">Preface</h2><br />
 <ul>
+	<li>Many files call this autonomous submersible a Remote Operated Vehicle. As it turns out, communicating through even a meter of water is difficult, but "ROV" stuck.</li>
 	<li>Programming is done with the Arduino IDE and an Arduino microcontroller. Arduino's language is most <i>similar</i> to C++, but not everything from C++ (notably the standard library) is native to Arduino, so keep that in mind.</li>
 	<li>Feel free to download the repository to test the code base or learn with it in your spare time. It is also recommended you borrow Arduino-compatible devices and look up how to get them to function; solid for general programming familiarity.</li>
 </ul>
