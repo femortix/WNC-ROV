@@ -85,10 +85,13 @@
 	<li>The MPU-6050's acceleration is now exclusively returning 1 instead of something over its full range [-32768, 32767].</li>
 	<li>Extremely tiny changes to mass distribution cause leaning, affecting movement.</li>
 	<li>The wires are shockingly loose; ideally they should be soldered when you're confident in your setup.</li>
+	<li>The pressure-sensing code only applies to the MPX4250A (and even then it may be off), not the bulky waterproof guy. Gather some experimental data like was done with the MPU-6050.</li>
+	<li>Having to call a function twice to access a register (unless that's intended in the library, not sure).</li>
 </ul>
 <h2 id="s4">Considerations</h2><br />
 <ol>
-	<li>Buoyancy control, or another vertical movement method?</li>
-	<li>Either way, will you need to upscale to an Arduino Mega?</li>
-	<li>Depending on that, and any additional sensors, what do you want to use as the hull?</li>
+	<li>Buoyancy control, or another vertical movement method? Below consideration is relevant to your chosen method.</li>
+	<li>Either way, will you need to upscale to an Arduino Mega? You will if you add another motor or servo or digital pin-heavy chip.</li>
+	<li>Depending on that, and any additional sensors, what do you want to use as the hull? Unsure whether hot glue for plastic holes or resin for resin holes is better.</li>
+	<li>Do you have enough people to delegate into specific enough roles? Speaking from experience, try to have "task forces" (I didn't push that agenda, but maybe should have).</li>
 </ol>
